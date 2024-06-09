@@ -48,6 +48,24 @@ int fclose(FILE *fp)
     return 0;
 }
 
+int fseek(FILE *fp, long offset, int origin)
+{
+    if (fp == NULL)
+        return EOF;
+    if ((fp->flag & (_READ | _EOF | _ERR)) != _READ)
+        return EOF;
+    int bufsize = (fp->flag * _UNBUF) ? 1 : BUFSIZ;
+    if (fp->base == NULL)
+    {
+        if ((fp->base = (char *)malloc(bufsize)) == NULL)
+            return EOF;
+        fp->ptr = fp->base;
+    }
+    _flushbuf(EOF, fp);
+    lseek(fp->fd, offset, origin);
+    return 0;
+}
+
 int _fillbuf(FILE *fp)
 {
     int bufsize;

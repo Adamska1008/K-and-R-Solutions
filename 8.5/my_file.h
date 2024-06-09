@@ -2,7 +2,6 @@
 #define MY_FILE_H
 
 #define PERMS 0666
-#define NULL 0
 #define EOF (-1)
 #define BUFSIZ 1024
 #define OPEN_MAX 20
@@ -40,5 +39,6 @@ int _flushbuf(int, FILE *);
 FILE *fopen(char *, char *);
 int fflush(FILE *);
 int fclose(FILE *);
+int fseek(FILE *, long, int);
 
 #endif
