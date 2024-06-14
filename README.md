@@ -11,4 +11,4 @@ Solutions to exercise in ch 8.
 
 ## 8.6
 
-Failed due to redeclaration of `opendir`, `closedir` `readdir` after include `sys/dir.h`. 
+Rename `opendir`, `closedir`, `readdir` as `open_dir`, `close_dir`, `read_dir` to avoid redeclaration.

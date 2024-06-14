@@ -12,11 +12,11 @@ typedef struct
 {
     int fd;
     Dirent d;
-} DIR;
+} Dir;
 
-DIR *opendir(char *dirname);
-Dirent *readdir(DIR *dfd);
-void closedir(DIR *dfd);
+Dir *open_dir(char *dirname);
+Dirent *read_dir(Dir *dfd);
+void close_dir(Dir *dfd);
 
 void fsize(char *);
 

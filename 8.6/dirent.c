@@ -27,21 +27,21 @@ void fsize(char *name)
 
 int fstat(int fd, struct stat *);
 
-DIR *opendir(char *dirname)
+Dir *open_dir(char *dirname)
 {
     int fd;
     struct stat stbuf;
-    DIR *dp;
+    Dir *dp;
 
-    if ((fd = open(dirname, O_RDONLY, 0)) == -1 || fstat(fd, &stbuf) == -1 || (stbuf.st_mode & __S_IFMT) != __S_IFDIR || (dp = (DIR *)malloc(sizeof(DIR))) == NULL)
+    if ((fd = open(dirname, O_RDONLY, 0)) == -1 || fstat(fd, &stbuf) == -1 || (stbuf.st_mode & __S_IFMT) != __S_IFDIR || (dp = (Dir *)malloc(sizeof(Dir))) == NULL)
         return NULL;
     dp->fd = fd;
     return dp;
 }
 
-Dirent *readdir(DIR *dp)
+Dirent *read_dir(Dir *dp)
 {
-    struct direct dirbuf;
+    struct dirent dirbuf;
     static Dirent d;
     while (read(dp->fd, (char *)&dirbuf, sizeof(dirbuf)) == sizeof(dirbuf))
     {
@@ -54,7 +54,7 @@ Dirent *readdir(DIR *dp)
     return NULL;
 }
 
-void closedir(DIR *dp)
+void close_dir(Dir *dp)
 {
     if (dp)
     {
@@ -69,12 +69,12 @@ void dirwalk(char *dir, void (*fcn)(char *))
     Dirent *dp;
     DIR *dfd;
 
-    if ((dfd = opendir(dir)) == NULL)
+    if ((dfd = open_dir(dir)) == NULL)
     {
         fprintf(stderr, "dirwalk: can't open %s\n", dir);
         return;
     }
-    while ((dp = readdir(dfd)) != NULL)
+    while ((dp = read_dir(dfd)) != NULL)
     {
         if (strcmp(dp->name, ".") == 0 || strcmp(dp->name, "..") == 0)
             continue; // skip self and parent to avoid loop forever
@@ -86,5 +86,5 @@ void dirwalk(char *dir, void (*fcn)(char *))
             (*fcn)(name);
         }
     }
-    closedir(dfd);
+    close_dir(dfd);
 }
