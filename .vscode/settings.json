@@ -1,5 +1,11 @@
 {
     "files.associations": {
-        "my_file.h": "c"
+        "my_file.h": "c",
+        "stdio.h": "c",
+        "fcntl.h": "c",
+        "features.h": "c",
+        "limits.h": "c",
+        "dir.h": "c",
+        "dirent.h": "c"
     }
 }
