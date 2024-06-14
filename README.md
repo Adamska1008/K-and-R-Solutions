@@ -3,7 +3,7 @@ Solutions to exercise in ch 8.
 
 ## 8.5
 
-`_flushbuf` also checks if `fp->base` is initialized first. After that, it will write everything in buffer to fd and set `fp->ptr` to `fp->base`. Simple logic.
+`_flushbuf` also checks if `fp->base` is initialized first. After that, it will write everything in buffer to fd and set `fp->ptr` to `fp->base`. Simple logic. Detail: the `cnt` will be set to `BUFSIZE - 1` so that the `char` arg will fit in buffer and be flushed together.  
 
 `fflush(fp)` will call `_flushbuf(EOF, fp)`. `fclose` will call `fflush` and system call of `close`.
 
@@ -11,4 +11,4 @@ Solutions to exercise in ch 8.
 
 ## 8.6
 
-Failed due to redeclaration of `opendir`, `closedir` `readdir` after include `sys/dir.h`.
+Failed due to redeclaration of `opendir`, `closedir` `readdir` after include `sys/dir.h`. 
