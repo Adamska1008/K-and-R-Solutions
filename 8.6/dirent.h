@@ -2,20 +2,24 @@
 #define DIRENT_H
 #define MAX_PATH 1024
 
+#include <sys/types.h>
+
 typedef struct
 {
-    long ino;
-    char name[256]; // name + '\0'
-} Dirent;
+    long d_ino;
+    off_t d_off;
+    unsigned short d_reclen;
+    char d_name[];
+} linux_dirent;
 
 typedef struct
 {
     int fd;
-    Dirent d;
+    linux_dirent d;
 } Dir;
 
 Dir *open_dir(char *dirname);
-Dirent *read_dir(Dir *dfd);
+linux_dirent *read_dir(Dir *dfd);
 void close_dir(Dir *dfd);
 
 void fsize(char *);

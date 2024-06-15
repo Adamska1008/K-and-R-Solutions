@@ -1,4 +1,6 @@
+#define _GNU_SOURCE
 #include <sys/stat.h>
+#include <sys/syscall.h>
 #include <sys/types.h>
 #include <sys/dir.h>
 #include <unistd.h>
@@ -39,19 +41,22 @@ Dir *open_dir(char *dirname)
     return dp;
 }
 
-Dirent *read_dir(Dir *dp)
+linux_dirent *read_dir(Dir *dp)
 {
-    struct dirent dirbuf;
-    static Dirent d;
-    while (read(dp->fd, (char *)&dirbuf, sizeof(dirbuf)) == sizeof(dirbuf))
+    static char buf[BUFSIZ];
+    static int bpos;
+    static linux_dirent dirent;
+    int nread = syscall(SYS_getdents, dp->fd, buf, BUFSIZ);
+    if (nread == -1)
     {
-        if (dirbuf.d_ino == 0) // slot not in use
-            continue;
-        d.ino = dirbuf.d_ino;
-        strcpy(d.name, dirbuf.d_name);
-        return &d;
+        perror("syscall(SYS_getdents)");
+        exit(EXIT_FAILURE);
     }
-    return NULL;
+    if (nread == 0)
+        return NULL;
+    dirent = *(linux_dirent *)(buf + bpos);
+    bpos += dirent.d_reclen;
+    return &dirent;
 }
 
 void close_dir(Dir *dp)
@@ -66,8 +71,8 @@ void close_dir(Dir *dp)
 void dirwalk(char *dir, void (*fcn)(char *))
 {
     char name[MAX_PATH];
-    Dirent *dp;
-    DIR *dfd;
+    linux_dirent *dp;
+    Dir *dfd;
 
     if ((dfd = open_dir(dir)) == NULL)
     {
@@ -76,13 +81,13 @@ void dirwalk(char *dir, void (*fcn)(char *))
     }
     while ((dp = read_dir(dfd)) != NULL)
     {
-        if (strcmp(dp->name, ".") == 0 || strcmp(dp->name, "..") == 0)
+        if (strcmp(dp->d_name, ".") == 0 || strcmp(dp->d_name, "..") == 0)
             continue; // skip self and parent to avoid loop forever
-        if (strlen(dir) + strlen(dp->name) + 2 > sizeof(name))
-            fprintf(stderr, "dirwalk: name %s %s is too long\n", dir, dp->name);
+        if (strlen(dir) + strlen(dp->d_name) + 2 > sizeof(name))
+            fprintf(stderr, "dirwalk: name %s %s is too long\n", dir, dp->d_name);
         else
         {
-            sprintf(name, "%s/%s", dir, dp->name);
+            sprintf(name, "%s/%s", dir, dp->d_name);
             (*fcn)(name);
         }
     }

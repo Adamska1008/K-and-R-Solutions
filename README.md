@@ -11,4 +11,6 @@ Solutions to exercise in ch 8.
 
 ## 8.6
 
-Rename `opendir`, `closedir`, `readdir` as `open_dir`, `close_dir`, `read_dir` to avoid redeclaration.
+So the K&R 2th edition is basically not appliable in Ubuntu. To read dirent, you should first define a `linux_dirent` by yourself and call `syscall(SYS_getdent)` to fill it. If you try to call `read` on a directory, you will get an error 21.
+
+The exer in this chapter is relatively easy.
