@@ -3,4 +3,4 @@ run:
 	@./main
 
 clean:
-	rm main
+	@rm main
