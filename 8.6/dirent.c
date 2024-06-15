@@ -43,19 +43,26 @@ Dir *open_dir(char *dirname)
 
 linux_dirent *read_dir(Dir *dp)
 {
-    static char buf[BUFSIZ];
-    static int bpos;
     static linux_dirent dirent;
-    int nread = syscall(SYS_getdents, dp->fd, buf, BUFSIZ);
-    if (nread == -1)
+    static unsigned long offset;
+    static char *buf;
+    static int nread;
+    if (buf == NULL)
     {
-        perror("syscall(SYS_getdents)");
-        exit(EXIT_FAILURE);
+        buf = (char *)malloc(BUFSIZ);
+        nread = syscall(SYS_getdents, dp->fd, buf, BUFSIZ);
+        if (nread == -1)
+        {
+            perror("syscall(SYS_getdents)");
+            exit(EXIT_FAILURE);
+        }
+        if (nread == 0)
+            return NULL;
     }
-    if (nread == 0)
+    if (offset >= nread)
         return NULL;
-    dirent = *(linux_dirent *)(buf + bpos);
-    bpos += dirent.d_reclen;
+    dirent = *(linux_dirent *)(buf + offset);
+    offset += dirent.d_reclen;
     return &dirent;
 }
 
