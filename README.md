@@ -13,4 +13,4 @@ Solutions to exercise in ch 8.
 
 So the K&R 2th edition is basically not appliable in Ubuntu. To read dirent, you should first define a `linux_dirent` by yourself and call `syscall(SYS_getdent)` to fill it. If you try to call `read` on a directory, you will get an error 21.
 
-The exer in this chapter is relatively easy.
+The exer in this chapter is relatively easy. Use `man 2 stat` to check what you can get in `struct stat` and print them. Here I use `st_uid` to print the owner name. 

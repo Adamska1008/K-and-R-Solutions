@@ -18,9 +18,9 @@ typedef struct
     linux_dirent d;
 } Dir;
 
-Dir *open_dir(char *dirname);
-linux_dirent *read_dir(Dir *dfd);
-void close_dir(Dir *dfd);
+Dir *opendir(char *dirname);
+linux_dirent *readdir(Dir *dfd);
+void closedir(Dir *dfd);
 
 void fsize(char *);
 
